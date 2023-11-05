@@ -2,11 +2,13 @@
 
 string input = String.Empty;
 Dictionary<string, string> slovnik = new();
-string[] finishwords = { "exit", "uloz", "ukaz" };
+string[] finishwords = { "exit", "uloz" };
+string[] helpwords = { "nacti", "ukaz" };
 Console.WriteLine("Dobry den, vytvorime slovnik.");
 Console.WriteLine("Kdyz budete chtit ukoncit zadani slov napiste : Exit");
 Console.WriteLine("Kdyz budete chtit vypsat slovnik napiste : Ukaz");
 Console.WriteLine("Kdyz budete chtit ulozit slovnik napiste : Uloz");
+Console.WriteLine("Kdyz budete chtit nacist slovnik napiste : Nacti");
 
 Console.WriteLine();
 do
@@ -25,7 +27,7 @@ do
             slovnik.Add(inputArray[0], inputArray[1]);
         }
     }
-    else if ((inputArray.Length <= 1) & (!finishwords.Contains(inputArray[0])))
+    else if ((inputArray.Length <= 1) && (!finishwords.Contains(input)) && (!helpwords.Contains(input)))
     {
         Console.WriteLine("Zadali jste jenom 1 slovo, melo by byt 2");
     }
@@ -48,14 +50,25 @@ do
                             Console.WriteLine("preklad slova {0} je {1}", par.Key, par.Value);
                         }
                     }
-                    Console.WriteLine("Vas slovnik je prazdny");
+                    else
+                    {
+                        Console.WriteLine("Vas slovnik je prazdny");
+                    }
                     break;
                 }
             case "uloz":
                 {
                     File.WriteAllLines("mujSlovnik.txt",
-                        slovnik.Select(x => "[" + x.Key + " " + x.Value + "]").ToArray());
+                        slovnik.Select(x => x.Key + "=" + x.Value).ToArray());
                     Console.WriteLine("Slovnik je ulozen do souboru mujSlovnik.txt");
+                    break;
+                }
+            case "nacti":
+                {
+                    string path = Path.GetFullPath("mujSlovnik.txt");
+                    slovnik = File.ReadAllLines(path)
+                                        .Select(x => x.Split('='))
+                                        .ToDictionary(x => x[0], x => x[1]);
                     break;
                 }
             default:
